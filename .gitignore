@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+.env
+
+# PixiDB directory
+.pixidb
+
+# Local notes / handoff docs, not part of repo history
+notes/
