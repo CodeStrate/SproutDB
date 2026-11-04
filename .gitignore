@@ -12,3 +12,6 @@ wheels/
 
 # PixiDB directory
 .pixidb
+
+# Local notes / handoff docs, not part of repo history
+notes/

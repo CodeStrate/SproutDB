@@ -1,18 +1,4 @@
 """
-GraphStorage contract tests.
-
-Updated 2026-10-23 for the add/get split: GraphStorage only owns the write
-path plus raw neighbor lookup (_add_node, _add_edge, _neighbors) — all
-underscore-prefixed, meant to be called by GraphIndex, not used directly.
-Read-friendly getters (get_node, has_node, find_nodes_by_name, get_edge)
-live on GraphIndex instead, which is not rewritten yet (still the old
-CSR-era self.buf.hash.* code) — those behaviors will come back as
-tests/test_index.py once that happens.
-
-These tests access GraphStorage's "private" dicts directly (_nodes,
-_name_idx, _succ) where needed — acceptable here because this file is
-testing the internal class in isolation, not through its intended caller.
-
 Underlying structure under test:
     _nodes: dict[UUID, Node]
     _succ:  dict[UUID, dict[UUID, dict[str, Edge]]]   # src -> dst -> relation_type -> Edge
