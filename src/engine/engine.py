@@ -8,11 +8,11 @@ class GraphEngine:
     
     def _generate_namespace_uuid(self):
         os.makedirs(PIXIDB_DIR, exist_ok=True)
-        if os.path.exists(NAMESPACE_FILE):
-            return
-        
-        namespace = uuid4()
-        with open(NAMESPACE_FILE, "w+") as f:
+        try:
+            with open(NAMESPACE_FILE, "x", encoding="utf-8") as f:
+                f.write(str(uuid4()))
+        except FileExistsError:
+            pass
             f.write(str(namespace))
 
         f.close()
