@@ -13,6 +13,4 @@ class GraphEngine:
                 f.write(str(uuid4()))
         except FileExistsError:
             pass
-            f.write(str(namespace))
-
-        f.close()
+        
