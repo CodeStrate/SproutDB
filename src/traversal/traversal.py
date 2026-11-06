@@ -1,6 +1,6 @@
 from collections import deque
 import heapq
-from src.graph.index import GraphIndex
+from src.graph import GraphIndex
 
 class GraphTraversal:
     def __init__(self, index: GraphIndex):

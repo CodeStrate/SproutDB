@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, model_validator
 from uuid import UUID , uuid5, uuid4
-from src.utils.namespace import get_ns_uuid
+from src.utils import get_ns_uuid
 
 class Node(BaseModel):
     id: UUID = Field(default_factory=uuid4) # random

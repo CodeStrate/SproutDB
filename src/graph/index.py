@@ -1,7 +1,7 @@
 from collections import defaultdict
 from uuid import UUID
-from src.graph.schemas import Node, Edge, EdgeKey
-from src.graph.storage import GraphStorage
+from .schemas import Node, Edge, EdgeKey
+from .storage import GraphStorage
 
 
 class GraphIndex:
@@ -20,9 +20,6 @@ class GraphIndex:
         self.store._add_edge(edge)
         if edge.dst_id not in self.relation_index[edge.relation_type][edge.src_id]:
             self.relation_index[edge.relation_type][edge.src_id].append(edge.dst_id)
-
-    def get_node(self, node_id: UUID):
-        return self.store._nodes.get(node_id)
 
     def get_node_label(self, node_id: UUID) -> str:
         label = self.node_to_label_index.get(node_id)
