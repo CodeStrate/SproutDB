@@ -10,8 +10,8 @@ wheels/
 .venv
 .env
 
-# PixiDB directory
-.pixidb
+# SproutDB directory
+.sproutdb
 
 # Local notes / handoff docs, not part of repo history
 notes/
