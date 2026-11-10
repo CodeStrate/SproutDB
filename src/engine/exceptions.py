@@ -12,7 +12,7 @@ class NodeNotFoundError(SproutDBError):
         super().__init__(f"No node found with {identifier}")
 
 class EdgeNotFoundError(SproutDBError):
-    def __init__(self, src_id: UUID | None, dst_id: UUID | None, relation_type: str | None):
+    def __init__(self, src_id: UUID | None, relation_type: str | None, dst_id: UUID | None):
         self.src_id = src_id
         self.dst_id = dst_id
         self.relation_type = relation_type

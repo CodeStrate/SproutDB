@@ -15,7 +15,8 @@ class NodeOperations:
     def get_node(self, node_id: UUID) -> Node:
         node = self.store._nodes.get(node_id)
         if node is None:
-            raise NodeNotFoundError(node_id)
+            raise NodeNotFoundError(node_id=node_id)
+        return node
 
     def has_node(self, node_id: UUID) -> bool:
         return node_id in self.store._nodes
@@ -27,7 +28,7 @@ class NodeOperations:
     def find_node(self, node_name: str) -> Node:
         matches = self.find_nodes(node_name)
         if not matches:
-            raise NodeNotFoundError(node_name)
+            raise NodeNotFoundError(name=node_name)
         if len(matches) > 1:
             raise AmbiguousNodeNameError(node_name, matches)
 

@@ -2,7 +2,7 @@ from uuid import uuid4, UUID
 import os
 
 from src.utils import SPROUTDB_DIR, NAMESPACE_FILE
-from src.graph import GraphStorage, GraphIndex, Node, Edge, EdgeKey
+from src.graph import GraphStorage, GraphIndex, Node, Edge
 from .node_ops import NodeOperations
 from .edge_ops import EdgeOperations
 
@@ -46,8 +46,8 @@ class SproutDB:
     def add_edge(self, src_id: UUID, dst_id: UUID, relation_type: str, props: dict | None = None) -> Edge:
         return self._edge_ops.add_edge(src_id, dst_id, relation_type, props)
 
-    def get_edge(self, key: EdgeKey) -> Edge:
-        return self._edge_ops.get_edge(key)
+    def get_edge(self, src_id: UUID, relation_type: str, dst_id: UUID) -> Edge:
+        return self._edge_ops.get_edge(src_id, relation_type, dst_id)
 
     def get_neighbors(self, node_id: UUID) -> dict[UUID, dict[str, Edge]]:
         return self._edge_ops.get_neighbors(node_id)
