@@ -1,6 +1,6 @@
 from src.graph import GraphStorage, GraphIndex, Node
 from uuid import UUID
-
+from .exceptions import NodeNotFoundError, AmbiguousNodeNameError 
 
 class NodeOperations:
     def __init__(self, store: GraphStorage, index: GraphIndex):
@@ -15,7 +15,7 @@ class NodeOperations:
     def get_node(self, node_id: UUID) -> Node:
         node = self.store._nodes.get(node_id)
         if node is None:
-            raise
+            raise NodeNotFoundError(node_id)
 
     def has_node(self, node_id: UUID) -> bool:
         return node_id in self.store._nodes
@@ -27,9 +27,9 @@ class NodeOperations:
     def find_node(self, node_name: str) -> Node:
         matches = self.find_nodes(node_name)
         if not matches:
-            raise
+            raise NodeNotFoundError(node_name)
         if len(matches) > 1:
-            raise
+            raise AmbiguousNodeNameError(node_name, matches)
 
         return matches[0]
 
