@@ -1,4 +1,5 @@
 from src.graph import GraphStorage, GraphIndex, Edge
+from .exceptions import NodeNotFoundError, EdgeNotFoundError
 from uuid import UUID
 
 
@@ -8,12 +9,23 @@ class EdgeOperations:
         self.index = index
 
     def add_edge(self, src_id: UUID, dst_id: UUID, relation_type: str, props: dict | None = None) -> Edge:
+        if src_id not in self.store._nodes:
+            raise NodeNotFoundError(node_id=src_id)
+        if dst_id not in self.store._nodes:
+            raise NodeNotFoundError(node_id=dst_id)
         new_edge = Edge(src_id=src_id, dst_id=dst_id, relation_type=relation_type, props=props or {})
         self.index.add_edge(new_edge)
         return new_edge
 
     def get_edge(self, src_id: UUID, relation_type: str, dst_id: UUID) -> Edge:
-        return self.index.get_edge((src_id, relation_type, dst_id))
+        if src_id not in self.store._nodes:
+            raise NodeNotFoundError(node_id=src_id)
+        if dst_id not in self.store._nodes:
+            raise NodeNotFoundError(node_id=dst_id)
+        try:
+            return self.index.get_edge((src_id, relation_type, dst_id))
+        except KeyError:
+            raise EdgeNotFoundError(src_id, relation_type, dst_id)
 
     def get_neighbors(self, node_id: UUID) -> dict[UUID, dict[str, Edge]]:
         return self.index.get_neighbors(node_id)
