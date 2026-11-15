@@ -3,6 +3,7 @@ import os
 
 from src.utils import SPROUTDB_DIR, NAMESPACE_FILE
 from src.graph import GraphStorage, GraphIndex, Node, Edge
+from src.traversal import GraphTraversal
 from .node_ops import NodeOperations
 from .edge_ops import EdgeOperations
 
@@ -14,6 +15,7 @@ class SproutDB:
         self.index = GraphIndex(self.store)
         self._node_ops = NodeOperations(self.store, self.index)
         self._edge_ops = EdgeOperations(self.store, self.index)
+        self._traversal = GraphTraversal(self.index)
 
     def _generate_namespace_uuid(self):
         os.makedirs(SPROUTDB_DIR, exist_ok=True)
@@ -42,6 +44,9 @@ class SproutDB:
     def get_nodes_by_label(self, label: str) -> list[Node]:
         return self._node_ops.get_nodes_by_label(label)
 
+    def get_node_label(self, node_id: UUID) -> str:
+        return self._node_ops.get_node_label(node_id)
+
     # -- edge operations --
     def add_edge(self, src_id: UUID, dst_id: UUID, relation_type: str, props: dict | None = None) -> Edge:
         return self._edge_ops.add_edge(src_id, dst_id, relation_type, props)
@@ -60,3 +65,10 @@ class SproutDB:
 
     def get_edges_by_relation_type(self, relation_type: str) -> list[Edge]:
         return self._edge_ops.get_edges_by_relation_type(relation_type)
+
+    # -- traversal --
+    def bfs(self, start: UUID, relation_type: str | None = None, node_label: str | None = None, max_depth: int | None = None) -> list[tuple]:
+        return self._traversal.bfs(start, relation_type, node_label, max_depth)
+
+    def shortest_path(self, start: UUID, end: UUID, weight_key: str | None = None, relation_type: str | None = None) -> list[UUID]:
+        return self._traversal.shortest_path(start, end, weight_key, relation_type)

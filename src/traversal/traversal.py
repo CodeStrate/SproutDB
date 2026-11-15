@@ -2,13 +2,13 @@ from collections import deque
 import heapq
 from src.graph import GraphIndex
 
+
 class GraphTraversal:
     def __init__(self, index: GraphIndex):
         self.index = index
 
     def bfs(self, start, relation_type=None, node_label=None, max_depth=None):
-        # TODO: WE should augment edges return here.
-        if not self.index.has_node(start):
+        if start not in self.index.store._nodes:
             return []
         
         visited_set = set()
@@ -26,7 +26,7 @@ class GraphTraversal:
                 traversed_path.append((current_node, depth))
             if max_depth is not None and depth >= max_depth:
                 continue # skips all nodes past depth but still computes nodes at max_depth by ignoring.
-            neighbors = self.index.get_neighbors(current_node) if relation_type is None else self.index.get_neighbors_by_relation(current_node, relation_type)
+            neighbors = self.index.get_neighbors(current_node) if relation_type is None else self.index.get_neighbors_by_relation_type(current_node, relation_type)
             for neighbor in neighbors:
                 if neighbor not in visited_set:
                     visited_set.add(neighbor)
@@ -36,7 +36,7 @@ class GraphTraversal:
         return traversed_path
 
     def shortest_path(self, start, end, weight_key=None, relation_type=None): # dijkstra if weight, fall back to bfs otherwise
-        if not self.index.has_node(start) or not self.index.has_node(end):
+        if start not in self.index.store._nodes or end not in self.index.store._nodes:
             return []
 
         if start == end:
@@ -54,7 +54,7 @@ class GraphTraversal:
             current_node = q.popleft()
             if current_node == end:
                 return self._reconstruct_path(parent, end)
-            neighbors = self.index.get_neighbors(current_node) if relation_type is None else self.index.get_neighbors_by_relation(current_node, relation_type)
+            neighbors = self.index.get_neighbors(current_node) if relation_type is None else self.index.get_neighbors_by_relation_type(current_node, relation_type)
             for neighbor in neighbors:
                 if neighbor not in parent:
                     parent[neighbor] = current_node
@@ -73,9 +73,24 @@ class GraphTraversal:
                 return self._reconstruct_path(parent, end)
             if current_dist > dist[current_node]:
                 continue # stale entry: a shorter path to this node was already found
-            neighbor_edges = self.index.get_neighbor_edges(current_node) if relation_type is None else self.index.get_neighbor_edges_by_relation(current_node, relation_type)
-            for neighbor, props in neighbor_edges:
-                weight = props.get(weight_key, 1)
+
+            if relation_type is None:
+                # unfiltered as every (neighbor, relation_type) edge is its own candidate —
+                # a multigraph with parallel edges of different weights isn't collapsed
+                # to one edge per neighbor
+
+                neighbor_edges = self.index.get_neighbors(current_node) # dict[UUID, dict[str, Edge]]
+                edge_candidates = (
+                    (neighbor, edge)
+                    for neighbor, edges_by_relation in neighbor_edges.items()
+                    for edge in edges_by_relation.values()
+                )
+            else:
+                neighbor_edges = self.index.get_neighbor_edges_by_relation_type(current_node, relation_type) # dict[UUID, Edge]
+                edge_candidates = neighbor_edges.items()
+
+            for neighbor, edge in edge_candidates:
+                weight = edge.props.get(weight_key, 1)
                 if weight < 0:
                     raise ValueError(
                         f"Negative edge weight ({weight}) between {current_node} and {neighbor} "

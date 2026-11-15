@@ -34,6 +34,12 @@ class NodeOperations:
 
         return matches[0]
 
+    def get_node_label(self, node_id: UUID) -> str:
+        try:
+            return self.index.get_node_label(node_id)
+        except KeyError:
+            raise NodeNotFoundError(node_id=node_id)
+
     def get_nodes_by_label(self, label: str) -> list[Node]:
         node_ids = self.index.get_nodes_by_label(label)
         return [self.store._nodes[node_id] for node_id in node_ids]
