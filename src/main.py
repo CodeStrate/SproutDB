@@ -1,3 +1,3 @@
-from src import GraphEngine
+from src import SproutDB
 
-engine = GraphEngine()
+graph = SproutDB()

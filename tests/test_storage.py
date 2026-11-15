@@ -1,9 +1,3 @@
-"""
-Underlying structure under test:
-    _nodes: dict[UUID, Node]
-    _succ:  dict[UUID, dict[UUID, dict[str, Edge]]]   # src -> dst -> relation_type -> Edge
-    _name_idx: dict[str, list[UUID]]
-"""
 import pytest
 
 from src.graph.storage import GraphStorage
@@ -150,9 +144,6 @@ class TestEdgeIdentity:
         assert e1.id != e2.id
 
     def test_two_distinct_same_named_nodes_do_not_collide_edge_ids(self, bob):
-        """Regression test for the bug caught in the 2026-10-01 vault fix: hashing
-        src_name/dst_name instead of src_id/dst_id would make two different
-        same-named nodes produce the same edge id when connected to a common node."""
         alice1 = Node(name="Alice", label="Person")
         alice2 = Node(name="Alice", label="Person")
         e1 = Edge(src_id=alice1.id, dst_id=bob.id, relation_type="follows")
